@@ -1,0 +1,77 @@
+import SwiftUI
+
+// MARK: - Model
+// Represents one quiz item
+struct Element {
+    let name: String
+    let imageName: String
+}
+
+// MARK: - ViewModel (Business Logic)
+// This separates logic from UI (important for teaching system thinking)
+class QuizViewModel: ObservableObject {
+    
+    // @Published = when this changes, UI automatically updates
+    @Published var currentElementIndex = 0
+    @Published var isAnswerVisible = false
+    
+    let elements = [
+        Element(name: "Hydrogen", imageName: "hydrogen"),
+        Element(name: "Helium", imageName: "helium"),
+        Element(name: "Lithium", imageName: "lithium")
+    ]
+    
+    var currentElement: Element {
+        elements[currentElementIndex]
+    }
+    
+    func showAnswer() {
+        isAnswerVisible = true
+    }
+    
+    func nextElement() {
+        currentElementIndex = (currentElementIndex + 1) % elements.count
+        isAnswerVisible = false
+    }
+}
+
+// MARK: - View (UI Layer)
+struct ContentView: View {
+    
+    // @StateObject = keeps ViewModel alive and observed
+    @StateObject private var viewModel = QuizViewModel()
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            
+            // Image (replaces UIImageView)
+            Image(viewModel.currentElement.imageName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 140, height: 140)
+            
+            // Text (replaces UILabel)
+            Text(viewModel.isAnswerVisible ? viewModel.currentElement.name : "???")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            // Buttons (replaces IBAction)
+            HStack {
+                
+                Button("Show Answer") {
+                    viewModel.showAnswer()
+                }
+                
+                Button("Next Element") {
+                    viewModel.nextElement()
+                }
+            }
+        }
+        .padding()
+    }
+}
+
+// MARK: - Preview (SwiftUI feature for live UI testing)
+#Preview {
+    ContentView()
+}
