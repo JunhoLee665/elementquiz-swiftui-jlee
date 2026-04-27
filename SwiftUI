@@ -1,0 +1,54 @@
+import UIKit
+
+class ViewController: UIViewController {
+
+    // MARK: - IBOutlets
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var answerLabel: UILabel!
+    
+    // MARK: - Data Source
+    let elementList = ["Carbon", "Gold", "Chlorine", "Sodium"]
+    
+    // MARK: - State
+    var currentElementIndex = 0
+    
+    // MARK: - Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        updateElement()
+    }
+    
+    // MARK: - UI Update Logic
+    func updateElement() {
+        // Prevent index crash
+        guard currentElementIndex < elementList.count else { return }
+        
+        let elementName = elementList[currentElementIndex]
+        
+        // Load image safely
+        if let image = UIImage(named: elementName) {
+            imageView.image = image
+        } else {
+            print("⚠️ Missing image: \(elementName)")
+            imageView.image = nil
+        }
+        
+        // Reset label
+        answerLabel.text = "?"
+    }
+
+    // MARK: - Actions
+    @IBAction func showAnswer(_ sender: UIButton) {
+        answerLabel.text = elementList[currentElementIndex]
+    }
+    
+    @IBAction func next(_ sender: UIButton) {
+        currentElementIndex += 1
+        
+        if currentElementIndex >= elementList.count {
+            currentElementIndex = 0
+        }
+        
+        updateElement()
+    }
+}
